@@ -5,6 +5,93 @@ import apiRoute from "./apiRoute";
 
 apiRoute.use(upload.array("file"));
 
+const calculateSubjectTotal = (total: number) => total;
+const calculateSubjectPercentage = (subTotal: any) => {
+  if (subTotal === 0) return 0;
+  return (subTotal / 100) * 100 - 4;
+};
+const calculateGradePoint = (percentage: number) => {
+  if (percentage === 0) return 0;
+  let GP;
+  if (percentage >= 80) GP = 5;
+  if (percentage >= 70 && percentage <= 79) GP = 4;
+  if (percentage >= 60 && percentage <= 69) GP = 3.5;
+  if (percentage >= 50 && percentage <= 59) GP = 3;
+  if (percentage >= 40 && percentage <= 49) GP = 2;
+  if (percentage >= 33 && percentage <= 39) GP = 1;
+  if (percentage < 33) GP = 0;
+  return GP;
+};
+
+const calculateTotalMarks = (subjects: any) => {
+  let total = 0;
+  Object.keys(subjects).map(function (key: any, index) {
+    if (
+      subjects[key] !== "N" &&
+      subjects[key] !== "A" &&
+      subjects[key] !== "O"
+    ) {
+      total = subjects[key] + total;
+    }
+  });
+  return total;
+};
+
+const calculateTotalGradePoint = (calculateGradePoints: any) => {
+  return Object.entries(calculateGradePoints).reduce(
+    (total: any, [key, value]) => total + value,
+    0
+  );
+};
+const calculateGPA = (
+  totalGradePoint: number,
+  calculateGradePoints: any,
+  subjects: any
+) => {
+  const forthSub1 = calculateGradePoints.production_GP;
+  const forthSub2 = calculateGradePoints.economics_GP;
+  const totalSubWithoutFourthSub = 5;
+  if (Object.values(subjects).includes("A")) return "Failed";
+  if (forthSub1 == 0 || forthSub2 == 0) {
+    if (forthSub2 >= 2 || forthSub1 >= 2) {
+      totalGradePoint = totalGradePoint - 2;
+    }
+  }
+  return totalGradePoint / totalSubWithoutFourthSub;
+};
+const calculateTotalFailed = (subjects: any) => {
+  let totalFailed = 0;
+  for (const key in subjects) {
+    if (subjects[key] == "A") {
+      ++totalFailed;
+    }
+  }
+  return totalFailed;
+};
+const calculateSubjectNumbers = (
+  object: any,
+  isUnderscoreTrue: boolean,
+  PropertySuffixText: string,
+  callbackFunction: any
+) => {
+  return Object.entries(object).reduce((result: any, [key, value]) => {
+    const [subjectName, subjectPosition, suffix] = key.split("_");
+    const fullSubjectName = isUnderscoreTrue
+      ? `${subjectName}_${subjectPosition}`
+      : subjectName;
+    if (value === "N" || value === "A" || value === "O") {
+      value = 0;
+    }
+    if (!result[fullSubjectName + PropertySuffixText]) {
+      result[fullSubjectName + PropertySuffixText] = 0;
+    }
+    result[fullSubjectName + PropertySuffixText] = callbackFunction(
+      (result[fullSubjectName + PropertySuffixText] += value)
+    );
+    return result;
+  }, {});
+};
+
 apiRoute.post(async (req: any, res) => {
   const file = req.files[0];
   const filename = file.filename;
@@ -54,115 +141,36 @@ apiRoute.post(async (req: any, res) => {
     ],
   });
 
-  const calculatePercentage = (subTotal: any) => {
-    if (subTotal === 0) return { percentage: 0, GP: 0 };
-    // console.log(subTotal);
-    const percentage = (subTotal / 100) * 100 - 4;
-    let GP;
-    if (percentage >= 80) GP = 5;
-    if (percentage >= 70 && percentage <= 79) GP = 4;
-    if (percentage >= 60 && percentage <= 69) GP = 3.5;
-    if (percentage >= 50 && percentage <= 59) GP = 3;
-    if (percentage >= 40 && percentage <= 49) GP = 2;
-    if (percentage >= 33 && percentage <= 39) GP = 1;
-    if (percentage < 33) GP = 0;
-    return { percentage, GP };
-  };
+  const values = excelData.markSheet.map((markSheet: any) => {
+    const { roll, name, ...subjects } = markSheet;
 
-  const values = excelData.markSheet.map((customer: any) => {
-    const { roll, name, ...rest } = customer;
-    const subjectTotal = Object.entries(rest).reduce(
-      (result: any, [key, value]) => {
-        const [subjectName, subjectPosition, suffix] = key.split("_");
-        const fullSubjectName = `${subjectName}_${subjectPosition}`;
-        if (!result[fullSubjectName]) {
-          result[fullSubjectName] = 0;
-        }
-        if (value === "N" || value === "A" || value === "O") {
-          value = 0;
-        }
-        result[fullSubjectName] += value;
-        return result;
-      },
-      {}
+    const subjectTotal = calculateSubjectNumbers(
+      subjects,
+      true,
+      "",
+      calculateSubjectTotal
     );
-    // console.log(subjectTotal);
-    // console.log(subjectTotal.bangla_1st);
+    const subjectPercentages = calculateSubjectNumbers(
+      subjectTotal,
+      false,
+      "_percentage",
+      calculateSubjectPercentage
+    );
+    const subjectGradePoints = calculateSubjectNumbers(
+      subjectPercentages,
+      false,
+      "_GP",
+      calculateGradePoint
+    );
+    console.log(subjectTotal, "subjectTotal");
+    console.log(subjectPercentages, "subjectPercentages");
+    console.log(subjectGradePoints, "subjectGradePoints");
 
-    // const bangla_percentage: any = calculatePercentage(
-    //   subjectTotal.bangla_1st + subjectTotal.bangla_2nd
-    // );
-    // const bangla_GP: any = calculatePercentage(
-    //   subjectTotal.bangla_1st + subjectTotal.bangla_2nd
-    // );
-    // const english_percentage: any = calculatePercentage(
-    //   rest.english_1st_CQ + rest.english_2nd_CQ
-    // );
-    // const accounting_percentage: any = calculatePercentage(
-    //   subjectTotal.accounting_1st + subjectTotal.accounting_2nd
-    // );
-    // const business_percentage: any = calculatePercentage(
-    //   subjectTotal.business_1st + subjectTotal.business_2nd
-    // );
-    // const production_percentage: any = calculatePercentage(
-    //   subjectTotal.production_1st + subjectTotal.production_2nd
-    // );
-    // const finance_percentage: any = calculatePercentage(
-    //   subjectTotal.finance_1st + subjectTotal.finance_2nd
-    // );
-    // const economics_percentage: any = calculatePercentage(
-    //   subjectTotal.economics_1st + subjectTotal.economics_2nd
-    // );
-
-    const calculateTotalMarks = (nums: any) => {
-      let total = 0;
-      Object.keys(nums).map(function (key: any, index) {
-        if (nums[key] !== "N" && nums[key] !== "A" && nums[key] !== "O") {
-          total = nums[key] + total;
-        }
-      });
-      return total;
-    };
-
-    // const totalGP = () => {
-    //   const allSubjectNumbers = [
-    //     bangla_GP.GP,
-    //     english_percentage.GP,
-    //     accounting_percentage.GP,
-    //     production_percentage.GP,
-    //     business_percentage.GP,
-    //     finance_percentage.GP,
-    //     economics_percentage.GP,
-    //   ];
-    //   let totalGP = 0;
-    //   allSubjectNumbers
-    //     .filter((sub: any) => sub !== "O")
-    //     .map((num: number) => (totalGP += num));
-    //   const { GPA, totalFailed } = calculateGPA(totalGP);
-    //   return {
-    //     GPA: totalFailed > 0 ? "Failed" : GPA,
-    //     GP: totalGP,
-    //     totalFailed,
-    //   };
-    // };
-    // const calculateGPA = (totalGP: number) => {
-    //   const forthSub1 = production_percentage.GP;
-    //   const forthSub2 = economics_percentage.GP;
-    //   if (forthSub1 != "O") {
-    //     totalGP = totalGP - 2;
-    //   }
-    //   if (forthSub2 != "O") {
-    //     totalGP = totalGP - 2;
-    //   }
-
-    //   let totalFailed: any = 0;
-    //   for (const key in rest) {
-    //     if (rest[key] == "A") {
-    //       ++totalFailed;
-    //     }
-    //   }
-    //   return { GPA: totalGP / 5, totalFailed };
-    // };
+    const totalMarks = calculateTotalMarks(subjects);
+    const totalGradePoint = calculateTotalGradePoint(subjectGradePoints);
+    const GPA = calculateGPA(totalGradePoint, subjectGradePoints, subjects);
+    const totalFailed = calculateTotalFailed(subjects);
+    console.log(totalMarks, totalGradePoint, GPA, totalFailed);
 
     // return [
     // //   null,
@@ -297,7 +305,7 @@ apiRoute.post(async (req: any, res) => {
     //   //   res.status(200).json({ data: worksheetsArray });
     // ];
   });
-  console.log(values);
+  //   console.log(values);
   //   const sql =
   //     "INSERT INTO business (id, roll, name, date, group_name, bangla_1st_CQ, bangla_1st_MCQ,bangla_1st_total,bangla_2nd_CQ,bangla_2nd_MCQ,bangla_2nd_total,bangla_percentage,bangla_GP,english_1st_CQ,english_2nd_CQ,english_total,english_percentage,english_GP,accounting_1st_CQ,accounting_1st_MCQ,accounting_1st_total,accounting_2nd_CQ,accounting_2nd_MCQ,accounting_2nd_total,accounting_percentage,accounting_GP,business_1st_CQ,business_1st_MCQ,business_1st_total,business_2nd_CQ,business_2nd_MCQ,business_2nd_total,business_percentage,business_GP,production_1st_CQ,production_1st_MCQ,production_1st_total,production_2nd_CQ,production_2nd_MCQ,production_2nd_total,production_percentage,production_GP,finance_1st_CQ,finance_1st_MCQ,finance_1st_total,finance_2nd_CQ,finance_2nd_MCQ,finance_2nd_total,finance_percentage,finance_GP,economics_1st_CQ,economics_1st_MCQ,economics_1st_total,economics_2nd_CQ,economics_2nd_MCQ,economics_2nd_total,economics_percentage,economics_GP,total_marks,total_gp,GPA,Total_Failed_Sub,merit) values ?;";
   //   const sql = `INSERT INTO test (ID, Name, Address, Phone, HomeAddress) values ?;`;

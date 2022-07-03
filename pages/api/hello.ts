@@ -91,6 +91,23 @@ const calculateSubjectNumbers = (
     return result;
   }, {});
 };
+const defineMerit = (markSheet: any) => {
+  let merit = 1;
+  for (let i = 0; i < markSheet.length; i++) {
+    if (markSheet[i].total_failed == 0) {
+      markSheet[i].merit = merit;
+      merit++;
+    } else {
+      markSheet[i].merit = "Failed";
+    }
+  }
+  const sorted = markSheet
+    .filter((item: any) => item.merit !== "Failed")
+    .sort((a: any, b: any) => a.merit - b.merit);
+  return sorted.concat(
+    markSheet.filter((item: any) => item.merit === "Failed")
+  );
+};
 
 apiRoute.post(async (req: any, res) => {
   const file = req.files[0];
@@ -162,16 +179,31 @@ apiRoute.post(async (req: any, res) => {
       "_GP",
       calculateGradePoint
     );
-    console.log(subjectTotal, "subjectTotal");
-    console.log(subjectPercentages, "subjectPercentages");
-    console.log(subjectGradePoints, "subjectGradePoints");
+    // console.log(subjectTotal, "subjectTotal");
+    // console.log(subjectPercentages, "subjectPercentages");
+    // console.log(subjectGradePoints, "subjectGradePoints");
 
     const totalMarks = calculateTotalMarks(subjects);
     const totalGradePoint = calculateTotalGradePoint(subjectGradePoints);
     const GPA = calculateGPA(totalGradePoint, subjectGradePoints, subjects);
     const totalFailed = calculateTotalFailed(subjects);
-    console.log(totalMarks, totalGradePoint, GPA, totalFailed);
 
+    const merge = {
+      id: null,
+      roll,
+      name,
+      date: "2022",
+      groupe_name: "business",
+      ...subjectTotal,
+      ...subjectPercentages,
+      ...subjectGradePoints,
+      total_marks: totalMarks,
+      total_GP: totalGradePoint,
+      GPA,
+      total_failed: totalFailed,
+    };
+    // console.log(merge);
+    return merge;
     // return [
     // //   null,
     // //   roll,
@@ -305,7 +337,11 @@ apiRoute.post(async (req: any, res) => {
     //   //   res.status(200).json({ data: worksheetsArray });
     // ];
   });
-  //   console.log(values);
+  const merit = defineMerit(values);
+  const arrayOfArray = (values: any) => {
+    return values.map((item: any, i: number) => Object.values(item));
+  };
+  console.log(arrayOfArray(values));
   //   const sql =
   //     "INSERT INTO business (id, roll, name, date, group_name, bangla_1st_CQ, bangla_1st_MCQ,bangla_1st_total,bangla_2nd_CQ,bangla_2nd_MCQ,bangla_2nd_total,bangla_percentage,bangla_GP,english_1st_CQ,english_2nd_CQ,english_total,english_percentage,english_GP,accounting_1st_CQ,accounting_1st_MCQ,accounting_1st_total,accounting_2nd_CQ,accounting_2nd_MCQ,accounting_2nd_total,accounting_percentage,accounting_GP,business_1st_CQ,business_1st_MCQ,business_1st_total,business_2nd_CQ,business_2nd_MCQ,business_2nd_total,business_percentage,business_GP,production_1st_CQ,production_1st_MCQ,production_1st_total,production_2nd_CQ,production_2nd_MCQ,production_2nd_total,production_percentage,production_GP,finance_1st_CQ,finance_1st_MCQ,finance_1st_total,finance_2nd_CQ,finance_2nd_MCQ,finance_2nd_total,finance_percentage,finance_GP,economics_1st_CQ,economics_1st_MCQ,economics_1st_total,economics_2nd_CQ,economics_2nd_MCQ,economics_2nd_total,economics_percentage,economics_GP,total_marks,total_gp,GPA,Total_Failed_Sub,merit) values ?;";
   //   const sql = `INSERT INTO test (ID, Name, Address, Phone, HomeAddress) values ?;`;

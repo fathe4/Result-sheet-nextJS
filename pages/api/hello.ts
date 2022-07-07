@@ -2,13 +2,14 @@ const excelToJson = require("convert-excel-to-json");
 import xlsx from "node-xlsx";
 import upload from "../../middleware/middleware";
 import apiRoute from "./apiRoute";
-
+import dbConnection from "../../config/db";
 apiRoute.use(upload.array("file"));
 
 const calculateSubjectTotal = (total: number) => total;
 const calculateSubjectPercentage = (subTotal: any) => {
   if (subTotal === 0) return 0;
-  return (subTotal / 100) * 100 - 4;
+  const percentage = ((subTotal / 100) * 100).toFixed(2);
+  return Number(percentage);
 };
 const calculateGradePoint = (percentage: number) => {
   if (percentage === 0) return 0;
@@ -108,6 +109,20 @@ const defineMerit = (markSheet: any) => {
     markSheet.filter((item: any) => item.merit === "Failed")
   );
 };
+const makeArrayOfArray = (values: any) => {
+  return values.map((item: any, i: number) => Object.values(item));
+};
+const query = (firstObject: any, arrayOfArrayResults: any) => {
+  let allData = "INSERT INTO business (";
+  const keys = Object.keys(firstObject);
+  for (let i = 0; i < keys.length; i++) {
+    let data = keys[i];
+    if (i == 0) allData += data;
+    else allData += ", " + data;
+  }
+  allData += ") values ?";
+  return allData;
+};
 
 apiRoute.post(async (req: any, res) => {
   const file = req.files[0];
@@ -160,11 +175,10 @@ apiRoute.post(async (req: any, res) => {
 
   const values = excelData.markSheet.map((markSheet: any) => {
     const { roll, name, ...subjects } = markSheet;
-
     const subjectTotal = calculateSubjectNumbers(
       subjects,
       true,
-      "",
+      "_total",
       calculateSubjectTotal
     );
     const subjectPercentages = calculateSubjectNumbers(
@@ -179,21 +193,18 @@ apiRoute.post(async (req: any, res) => {
       "_GP",
       calculateGradePoint
     );
-    // console.log(subjectTotal, "subjectTotal");
-    // console.log(subjectPercentages, "subjectPercentages");
-    // console.log(subjectGradePoints, "subjectGradePoints");
-
     const totalMarks = calculateTotalMarks(subjects);
     const totalGradePoint = calculateTotalGradePoint(subjectGradePoints);
     const GPA = calculateGPA(totalGradePoint, subjectGradePoints, subjects);
     const totalFailed = calculateTotalFailed(subjects);
-
     const merge = {
       id: null,
       roll,
       name,
       date: "2022",
-      groupe_name: "business",
+      group_name: "business",
+      english_total: subjects.english_1st_CQ + subjects.english_2nd_CQ,
+      ...subjects,
       ...subjectTotal,
       ...subjectPercentages,
       ...subjectGradePoints,
@@ -202,171 +213,21 @@ apiRoute.post(async (req: any, res) => {
       GPA,
       total_failed: totalFailed,
     };
-    // console.log(merge);
     return merge;
-    // return [
-    // //   null,
-    // //   roll,
-    // //   name,
-    // //   "2022",
-    // //   "business",
-    // //   rest,
-    //   //   bangla_1st_CQ.toString(),
-    //   //   bangla_1st_MCQ.toString(),
-    //   //   subjectTotal.bangla_1st.toString(),
-    //   //   bangla_2nd_CQ.toString(),
-    //   //   bangla_2nd_MCQ.toString(),
-    //   //   subjectTotal.bangla_2nd.toString(),
-    //   //   bangla_percentage.percentage.toString(),
-    //   //   bangla_GP.GP.toString(),
-    //   //   english_1st_CQ.toString(),
-    //   //   english_2nd_CQ.toString(),
-    //   //   (subjectTotal.english_1st + subjectTotal.english_2nd).toString(),
-    //   //   english_percentage.percentage.toString(),
-    //   //   english_percentage.GP.toString(),
-    //   //   accounting_1st_CQ.toString(),
-    //   //   accounting_1st_MCQ.toString(),
-    //   //   subjectTotal.accounting_1st.toString(),
-    //   //   accounting_2nd_CQ.toString(),
-    //   //   accounting_2nd_MCQ.toString(),
-    //   //   subjectTotal.accounting_2nd.toString(),
-    //   //   accounting_percentage.percentage.toString(),
-    //   //   accounting_percentage.GP.toString(),
-    //   //   business_1st_CQ.toString(),
-    //   //   business_1st_MCQ.toString(),
-    //   //   subjectTotal.business_1st.toString(),
-    //   //   business_2nd_CQ.toString(),
-    //   //   business_2nd_MCQ.toString(),
-    //   //   subjectTotal.business_2nd.toString(),
-    //   //   business_percentage.percentage.toString(),
-    //   //   business_percentage.GP.toString(),
-    //   //   production_1st_CQ.toString(),
-    //   //   production_1st_MCQ.toString(),
-    //   //   subjectTotal.production_1st.toString(),
-    //   //   production_2nd_CQ.toString(),
-    //   //   production_2nd_MCQ.toString(),
-    //   //   subjectTotal.production_2nd.toString(),
-    //   //   production_percentage.percentage.toString(),
-    //   //   production_percentage.GP.toString(),
-    //   //   finance_1st_CQ.toString(),
-    //   //   finance_1st_MCQ.toString(),
-    //   //   subjectTotal.finance_1st.toString(),
-    //   //   finance_2nd_CQ.toString(),
-    //   //   finance_2nd_MCQ.toString(),
-    //   //   subjectTotal.finance_2nd.toString(),
-    //   //   finance_percentage.percentage.toString(),
-    //   //   finance_percentage.GP.toString(),
-    //   //   economics_1st_CQ.toString(),
-    //   //   economics_1st_MCQ.toString(),
-    //   //   subjectTotal.economics_1st.toString(),
-    //   //   economics_2nd_CQ.toString(),
-    //   //   economics_2nd_MCQ.toString(),
-    //   //   subjectTotal.economics_2nd.toString(),
-    //   //   economics_percentage.percentage.toString(),
-    //   //   economics_percentage.GP.toString(),
-    //   calculateTotalMarks(rest).toString(),
-    //   totalGP().GP.toString(),
-    //   totalGP().GPA.toString(),
-    //   totalGP().totalFailed.toString(),
-    //   "",
-    //   //   res.status(200).json({ data: worksheetsArray });
-    // ];
-    // return [
-    //   roll,
-    //   name,
-    //   date: "2022",
-    //   group: "business",
-    //   bangla_1st_CQ,
-    //   bangla_1st_MCQ,
-    //   bangla_1st_total: subjectTotal.bangla_1st,
-    //   bangla_2nd_CQ,
-    //   bangla_2nd_MCQ,
-    //   bangla_2nd_total: subjectTotal.bangla_2nd,
-    //   bangla_percentage: bangla_percentage.percentage,
-    //   bangla_GP: bangla_GP.GP,
-    //   english_1st_CQ,
-    //   english_2nd_CQ,
-    //   english_total: subjectTotal.english_1st + subjectTotal.english_2nd,
-    //   english_percentage: english_percentage.percentage,
-    //   english_GP: english_percentage.GP,
-    //   accounting_1st_CQ,
-    //   accounting_1st_MCQ,
-    //   accounting_1st_total: subjectTotal.accounting_1st,
-    //   accounting_2nd_CQ,
-    //   accounting_2nd_MCQ,
-    //   accounting_2nd_total: subjectTotal.accounting_2nd,
-    //   accounting_percentage: accounting_percentage.percentage,
-    //   accounting_GP: accounting_percentage.GP,
-    //   business_1st_CQ,
-    //   business_1st_MCQ,
-    //   business_1st_total: subjectTotal.business_1st,
-    //   business_2nd_CQ,
-    //   business_2nd_MCQ,
-    //   business_2nd_total: subjectTotal.business_2nd,
-    //   business_percentage: business_percentage.percentage,
-    //   business_GP: business_percentage.GP,
-    //   production_1st_CQ,
-    //   production_1st_MCQ,
-    //   production_1st_total: subjectTotal.production_1st,
-    //   production_2nd_CQ,
-    //   production_2nd_MCQ,
-    //   production_2nd_total: subjectTotal.production_2nd,
-    //   production_percentage: production_percentage.percentage,
-    //   production_GP: production_percentage.GP,
-    //   finance_1st_CQ,
-    //   finance_1st_MCQ,
-    //   finance_1st_total: subjectTotal.finance_1st,
-    //   finance_2nd_CQ,
-    //   finance_2nd_MCQ,
-    //   finance_2nd_total: subjectTotal.finance_2nd,
-    //   finance_percentage: finance_percentage.percentage,
-    //   finance_GP: finance_percentage.GP,
-    //   economics_1st_CQ,
-    //   economics_1st_MCQ,
-    //   economics_1st_total: subjectTotal.economics_1st,
-    //   economics_2nd_CQ,
-    //   economics_2nd_MCQ,
-    //   economics_2nd_total: subjectTotal.economics_2nd,
-    //   economics_percentage: economics_percentage.percentage,
-    //   economics_GP: economics_percentage.GP,
-    //   total_marks: calculateTotalMarks(rest),
-    //   total_gp: totalGP().GP,
-    //   GPA: totalGP().GPA,
-    //   Total_Failed_Sub: totalGP().totalFailed,
-    //   merit: "",
-    //   //   res.status(200).json({ data: worksheetsArray });
-    // ];
   });
+
   const merit = defineMerit(values);
-  const arrayOfArray = (values: any) => {
-    return values.map((item: any, i: number) => Object.values(item));
-  };
-  console.log(arrayOfArray(values));
-  //   const sql =
-  //     "INSERT INTO business (id, roll, name, date, group_name, bangla_1st_CQ, bangla_1st_MCQ,bangla_1st_total,bangla_2nd_CQ,bangla_2nd_MCQ,bangla_2nd_total,bangla_percentage,bangla_GP,english_1st_CQ,english_2nd_CQ,english_total,english_percentage,english_GP,accounting_1st_CQ,accounting_1st_MCQ,accounting_1st_total,accounting_2nd_CQ,accounting_2nd_MCQ,accounting_2nd_total,accounting_percentage,accounting_GP,business_1st_CQ,business_1st_MCQ,business_1st_total,business_2nd_CQ,business_2nd_MCQ,business_2nd_total,business_percentage,business_GP,production_1st_CQ,production_1st_MCQ,production_1st_total,production_2nd_CQ,production_2nd_MCQ,production_2nd_total,production_percentage,production_GP,finance_1st_CQ,finance_1st_MCQ,finance_1st_total,finance_2nd_CQ,finance_2nd_MCQ,finance_2nd_total,finance_percentage,finance_GP,economics_1st_CQ,economics_1st_MCQ,economics_1st_total,economics_2nd_CQ,economics_2nd_MCQ,economics_2nd_total,economics_percentage,economics_GP,total_marks,total_gp,GPA,Total_Failed_Sub,merit) values ?;";
-  //   const sql = `INSERT INTO test (ID, Name, Address, Phone, HomeAddress) values ?;`;
-  //   const sql =
-  // "INSERT INTO test (ID, Name, Address, Phone, HomeAddress) VALUES (1, 'Ajeet Kumar','madhabdi', 27, 'Allahabad')";
-  //   const values = [
-  //     [2, "fathe", "Dhaka", 1017310, "Madhabdi"],
-  //     [3, "fathe", "Dhaka", 1017310, "Madhabdi"],
-  //   ];
-  //   dbconnection.query(sql, [values], function (err: any, result: any) {
-  //     if (err) throw err;
-  //     console.log("Number of records inserted: " + result.affectedRows);
-  //   });
-  //   dbconnection.query(sql, [values], function (err: any, results: any) {
-  //     console.log(results, err);
-  //   });
-  //   dbconnection.query(sql, [values], function (err: any, results: any) {
-  //     console.log(results, err);
-  //   });
+  const arrayOfArrayResults = makeArrayOfArray(merit);
+  const sql = query(merit[0], arrayOfArrayResults);
+  console.log(values);
+  dbConnection.query(
+    sql,
+    [arrayOfArrayResults],
+    function (err: any, result: any) {
+      if (err) throw err;
+      console.log("Number of records inserted: " + result.affectedRows);
+    }
+  );
 });
 
 export default apiRoute;
-
-export const config = {
-  api: {
-    bodyParser: false, // Disallow body parsing, consume as stream
-  },
-};

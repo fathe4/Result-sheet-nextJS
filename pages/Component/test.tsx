@@ -1,6 +1,6 @@
 import { Table } from "antd";
 import type { ColumnsType } from "antd/lib/table";
-import React from "react";
+import React, { Children, useEffect, useState } from "react";
 
 interface DataType {
   key: React.Key;
@@ -341,14 +341,96 @@ for (let i = 0; i < 100; i++) {
   });
 }
 
-const App: React.FC = () => (
-  <Table
-    columns={columns}
-    dataSource={data}
-    bordered
-    size="middle"
-    // scroll={{ x: "calc(700px + 50%)", y: 240 }}
-  />
-);
+const App = () => {
+  const [results, setResults] = useState([]);
+  const [tableColumn, setTableColumn] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/table/table")
+      .then((res) => res.json())
+      .then((data) => {
+        setTableColumn(data);
+      });
+  }, []);
+  useEffect(() => {
+    fetch("http://localhost:3000/api/results/results")
+      .then((res) => res.json())
+      .then((data) => {
+        setResults(data);
+      });
+  }, []);
+  //   const [subjectName, subjectPosition, suffix] = result.field?.split("_");
+  //   console.log(results);
+  //   const structureData = (results: any) => {
+  //     return results.reduce((result: any, value: any) => {
+  //       if (value.Field.includes("_")) {
+  //         const [subjectName, subjectPosition, suffix] = value.Field.split("_");
+  //         console.log(value.Field);
+
+  //         result.title = subjectName;
+  //         result.children = [
+  //           {
+  //             title: subjectPosition,
+  //             children: [
+  //               {
+  //                 title: suffix,
+  //                 dataIndex: suffix,
+  //               },
+  //             ],
+  //           },
+  //         ];
+  //       }
+  //       return result;
+  //     }, []);
+  //   };
+  //   const sResults = [
+  //     { Field: "name" },
+  //     { Field: "english_1st_CQ" },
+  //     { Field: "english_1st_MCQ" },
+  //     { Field: "english_2nd_CQ" },
+  //     { Field: "english_2nd_MCQ" },
+  //     { Field: "english_1st_total" },
+  //   ];
+
+  function resolveNode(arr: any, title: any) {
+    const node = arr.find((node: any) => node.title === title) ?? {
+      title,
+      width: 10,
+      fixed: "left",
+      children: [],
+    };
+    if (!arr.includes(node)) arr.push(node);
+    return node;
+  }
+
+  function setColumn(input: any) {
+    const result: any = [];
+    for (const { Field } of input) {
+      if (Field != "id" && Field != "date" && Field != "group_name") {
+        const [subject, part, suffix] = Field.split("_");
+        const s = resolveNode(result, subject);
+        const p = resolveNode(s.children, part);
+        // Don't create duplicates:
+        if (!p.children.find((node: any) => node.title === suffix)) {
+          p.children.push({ title: suffix, dataIndex: Field, width: 10 });
+        }
+      }
+    }
+    return result;
+  }
+  const column = setColumn(tableColumn);
+  const formattedJson = JSON.stringify(column, null, 2);
+  console.log(column);
+
+  return (
+    <Table
+      columns={column}
+      dataSource={data}
+      bordered
+      size="middle"
+      //   scroll={{ x: 3000, y: 200 }}
+    />
+  );
+};
 
 export default App;

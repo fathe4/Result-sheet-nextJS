@@ -1,4 +1,4 @@
-import { Table } from "antd";
+import { Switch, Table } from "antd";
 import type { ColumnsType } from "antd/lib/table";
 import React, { Children, useEffect, useState } from "react";
 
@@ -19,7 +19,7 @@ interface DataType {
 
 const columns: ColumnsType<DataType> = [
   { title: "roll", width: 50, dataIndex: "roll", key: "roll", fixed: "left" },
-  { title: "name", width: 50, dataIndex: "name", key: "name", fixed: "left" },
+  { title: "name", width: 60, dataIndex: "name", key: "name", fixed: "left" },
   {
     title: "bangla",
     width: 50,
@@ -514,7 +514,7 @@ const App = () => {
     };
     const name = {
       title: "name",
-      width: 50,
+      width: 60,
       dataIndex: "name",
       key: "name",
       fixed: "left",
@@ -552,14 +552,16 @@ const App = () => {
   const column = setColumn(tableColumn);
   const formattedJson = JSON.stringify(column, null, 2);
   console.log(formattedJson);
-
+  const [fixedTop, setFixedTop] = useState(false);
   return (
     <Table
       columns={columns}
       dataSource={data}
       bordered
       size="middle"
-      scroll={{ x: 3100, y: 1000 }}
+      scroll={{ x: 3000 }}
+      //   scroll={{ x: "calc(700px + 50%)", y: 1000 }}
+      sticky
     />
   );
 };

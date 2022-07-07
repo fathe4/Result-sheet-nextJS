@@ -18,309 +18,410 @@ interface DataType {
 }
 
 const columns: ColumnsType<DataType> = [
+  { title: "roll", width: 50, dataIndex: "roll", key: "roll", fixed: "left" },
+  { title: "name", width: 50, dataIndex: "name", key: "name", fixed: "left" },
   {
-    title: "Roll",
-    dataIndex: "roll",
-    key: "roll",
-    width: 60,
-    fixed: "left",
-  },
-  {
-    title: "Name",
-    dataIndex: "name",
-    key: "name",
-    width: 150,
-    fixed: "left",
-  },
-  {
-    title: "Bangla",
-    children: [
-      {
-        title: "1ST",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "2ND",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "AVG.",
-        children: [
-          {
-            title: "%",
-            dataIndex: "percentage",
-          },
-          {
-            title: "GP",
-            dataIndex: "gp",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "English",
-    children: [
-      {
-        title: "1ST",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "2ND",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "AVG.",
-        children: [
-          {
-            title: "%",
-            dataIndex: "percentage",
-          },
-          {
-            title: "GP",
-            dataIndex: "gp",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Physics",
-    children: [
-      {
-        title: "1ST",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "2ND",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "AVG.",
-        children: [
-          {
-            title: "%",
-            dataIndex: "percentage",
-          },
-          {
-            title: "GP",
-            dataIndex: "gp",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Chemistry",
-    children: [
-      {
-        title: "1ST",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "2ND",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "AVG.",
-        children: [
-          {
-            title: "%",
-            dataIndex: "percentage",
-          },
-          {
-            title: "GP",
-            dataIndex: "gp",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Mathematics",
-    children: [
-      {
-        title: "1ST",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "2ND",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "AVG.",
-        children: [
-          {
-            title: "%",
-            dataIndex: "percentage",
-          },
-          {
-            title: "GP",
-            dataIndex: "gp",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Biology",
-    children: [
-      {
-        title: "1ST",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "2ND",
-        children: [
-          {
-            title: "CQ",
-            dataIndex: "cq",
-          },
-          {
-            title: "MCQ",
-            dataIndex: "mcq",
-          },
-        ],
-      },
-      {
-        title: "AVG.",
-        children: [
-          {
-            title: "%",
-            dataIndex: "percentage",
-          },
-          {
-            title: "GP",
-            dataIndex: "gp",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Total Marks (600)",
-    width: 60,
-    dataIndex: "totalMarks",
-  },
-  {
-    title: "Total GP (30)",
+    title: "bangla",
     width: 50,
-    dataIndex: "totalGP",
+    children: [
+      {
+        title: "1st",
+        width: 50,
+        children: [
+          { title: "CQ", dataIndex: "bangla_1st_CQ", key: "bangla_1st_CQ" },
+          { title: "MCQ", dataIndex: "bangla_1st_MCQ", key: "bangla_1st_MCQ" },
+          {
+            title: "total",
+            dataIndex: "bangla_1st_total",
+            key: "bangla_1st_total",
+          },
+        ],
+      },
+      {
+        title: "2nd",
+        width: 50,
+        children: [
+          { title: "CQ", dataIndex: "bangla_2nd_CQ", key: "bangla_2nd_CQ" },
+          { title: "MCQ", dataIndex: "bangla_2nd_MCQ", key: "bangla_2nd_MCQ" },
+          {
+            title: "total",
+            dataIndex: "bangla_2nd_total",
+            key: "bangla_2nd_total",
+          },
+        ],
+      },
+      {
+        title: "percentage",
+        width: 50,
+        children: [
+          { dataIndex: "bangla_percentage", key: "bangla_percentage" },
+        ],
+      },
+      {
+        title: "GP",
+        width: 50,
+        children: [{ dataIndex: "bangla_GP", key: "bangla_GP" }],
+      },
+    ],
+  },
+  {
+    title: "english",
+    width: 50,
+    children: [
+      {
+        title: "1st",
+        width: 50,
+        children: [
+          { title: "CQ", dataIndex: "english_1st_CQ", key: "english_1st_CQ" },
+          {
+            title: "total",
+            dataIndex: "english_1st_total",
+            key: "english_1st_total",
+          },
+        ],
+      },
+      {
+        title: "2nd",
+        width: 50,
+        children: [
+          { title: "CQ", dataIndex: "english_2nd_CQ", key: "english_2nd_CQ" },
+          {
+            title: "total",
+            dataIndex: "english_2nd_total",
+            key: "english_2nd_total",
+          },
+        ],
+      },
+      {
+        title: "total",
+        width: 50,
+        children: [{ dataIndex: "english_total", key: "english_total" }],
+      },
+      {
+        title: "percentage",
+        width: 50,
+        children: [
+          { dataIndex: "english_percentage", key: "english_percentage" },
+        ],
+      },
+      {
+        title: "GP",
+        width: 50,
+        children: [{ dataIndex: "english_GP", key: "english_GP" }],
+      },
+    ],
+  },
+  {
+    title: "accounting",
+    width: 50,
+    children: [
+      {
+        title: "1st",
+        width: 50,
+        children: [
+          {
+            title: "CQ",
+            dataIndex: "accounting_1st_CQ",
+            key: "accounting_1st_CQ",
+          },
+          {
+            title: "MCQ",
+            dataIndex: "accounting_1st_MCQ",
+            key: "accounting_1st_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "accounting_1st_total",
+            key: "accounting_1st_total",
+          },
+        ],
+      },
+      {
+        title: "2nd",
+        width: 50,
+        children: [
+          {
+            title: "CQ",
+            dataIndex: "accounting_2nd_CQ",
+            key: "accounting_2nd_CQ",
+          },
+          {
+            title: "MCQ",
+            dataIndex: "accounting_2nd_MCQ",
+            key: "accounting_2nd_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "accounting_2nd_total",
+            key: "accounting_2nd_total",
+          },
+        ],
+      },
+      {
+        title: "percentage",
+        width: 50,
+        children: [
+          { dataIndex: "accounting_percentage", key: "accounting_percentage" },
+        ],
+      },
+      {
+        title: "GP",
+        width: 50,
+        children: [{ dataIndex: "accounting_GP", key: "accounting_GP" }],
+      },
+    ],
+  },
+  {
+    title: "business",
+    width: 50,
+    children: [
+      {
+        title: "1st",
+        width: 50,
+        children: [
+          { title: "CQ", dataIndex: "business_1st_CQ", key: "business_1st_CQ" },
+          {
+            title: "MCQ",
+            dataIndex: "business_1st_MCQ",
+            key: "business_1st_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "business_1st_total",
+            key: "business_1st_total",
+          },
+        ],
+      },
+      {
+        title: "2nd",
+        width: 50,
+        children: [
+          { title: "CQ", dataIndex: "business_2nd_CQ", key: "business_2nd_CQ" },
+          {
+            title: "MCQ",
+            dataIndex: "business_2nd_MCQ",
+            key: "business_2nd_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "business_2nd_total",
+            key: "business_2nd_total",
+          },
+        ],
+      },
+      {
+        title: "percentage",
+        width: 50,
+        children: [
+          { dataIndex: "business_percentage", key: "business_percentage" },
+        ],
+      },
+      {
+        title: "GP",
+        width: 50,
+        children: [{ dataIndex: "business_GP", key: "business_GP" }],
+      },
+    ],
+  },
+  {
+    title: "production",
+    width: 50,
+    children: [
+      {
+        title: "1st",
+        width: 50,
+        children: [
+          {
+            title: "CQ",
+            dataIndex: "production_1st_CQ",
+            key: "production_1st_CQ",
+          },
+          {
+            title: "MCQ",
+            dataIndex: "production_1st_MCQ",
+            key: "production_1st_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "production_1st_total",
+            key: "production_1st_total",
+          },
+        ],
+      },
+      {
+        title: "2nd",
+        width: 50,
+        children: [
+          {
+            title: "CQ",
+            dataIndex: "production_2nd_CQ",
+            key: "production_2nd_CQ",
+          },
+          {
+            title: "MCQ",
+            dataIndex: "production_2nd_MCQ",
+            key: "production_2nd_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "production_2nd_total",
+            key: "production_2nd_total",
+          },
+        ],
+      },
+      {
+        title: "percentage",
+        width: 50,
+        children: [
+          { dataIndex: "production_percentage", key: "production_percentage" },
+        ],
+      },
+      {
+        title: "GP",
+        width: 50,
+        children: [{ dataIndex: "production_GP", key: "production_GP" }],
+      },
+    ],
+  },
+  {
+    title: "finance",
+    width: 50,
+    children: [
+      {
+        title: "1st",
+        width: 50,
+        children: [
+          { title: "CQ", dataIndex: "finance_1st_CQ", key: "finance_1st_CQ" },
+          {
+            title: "MCQ",
+            dataIndex: "finance_1st_MCQ",
+            key: "finance_1st_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "finance_1st_total",
+            key: "finance_1st_total",
+          },
+        ],
+      },
+      {
+        title: "2nd",
+        width: 50,
+        children: [
+          { title: "CQ", dataIndex: "finance_2nd_CQ", key: "finance_2nd_CQ" },
+          {
+            title: "MCQ",
+            dataIndex: "finance_2nd_MCQ",
+            key: "finance_2nd_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "finance_2nd_total",
+            key: "finance_2nd_total",
+          },
+        ],
+      },
+      {
+        title: "percentage",
+        width: 50,
+        children: [
+          { dataIndex: "finance_percentage", key: "finance_percentage" },
+        ],
+      },
+      {
+        title: "GP",
+        width: 50,
+        children: [{ dataIndex: "finance_GP", key: "finance_GP" }],
+      },
+    ],
+  },
+  {
+    title: "economics",
+    width: 50,
+    children: [
+      {
+        title: "1st",
+        width: 50,
+        children: [
+          {
+            title: "CQ",
+            dataIndex: "economics_1st_CQ",
+            key: "economics_1st_CQ",
+          },
+          {
+            title: "MCQ",
+            dataIndex: "economics_1st_MCQ",
+            key: "economics_1st_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "economics_1st_total",
+            key: "economics_1st_total",
+          },
+        ],
+      },
+      {
+        title: "2nd",
+        width: 50,
+        children: [
+          {
+            title: "CQ",
+            dataIndex: "economics_2nd_CQ",
+            key: "economics_2nd_CQ",
+          },
+          {
+            title: "MCQ",
+            dataIndex: "economics_2nd_MCQ",
+            key: "economics_2nd_MCQ",
+          },
+          {
+            title: "total",
+            dataIndex: "economics_2nd_total",
+            key: "economics_2nd_total",
+          },
+        ],
+      },
+      {
+        title: "percentage",
+        width: 50,
+        children: [
+          { dataIndex: "economics_percentage", key: "economics_percentage" },
+        ],
+      },
+      {
+        title: "GP",
+        width: 50,
+        children: [{ dataIndex: "economics_GP", key: "economics_GP" }],
+      },
+    ],
+  },
+  {
+    title: "total",
+    width: 50,
+    children: [
+      {
+        title: "marks",
+        width: 50,
+        children: [{ dataIndex: "total_marks", key: "total_marks" }],
+      },
+      {
+        title: "gp",
+        width: 50,
+        children: [{ dataIndex: "total_gp", key: "total_gp" }],
+      },
+      {
+        title: "failed",
+        width: 50,
+        children: [{ dataIndex: "total_failed", key: "total_failed" }],
+      },
+    ],
   },
   {
     title: "GPA",
     width: 50,
-    dataIndex: "totalGPA",
+    children: [{ width: 50, children: [{ dataIndex: "GPA", key: "GPA" }] }],
   },
-  {
-    title: "No of failed sub",
-    width: 55,
-    dataIndex: "failedSub",
-  },
-  {
-    title: "Merit",
-    width: 50,
-    dataIndex: "merit",
-  },
+  { title: "merit", dataIndex: "merit", key: "merit", fixed: "right" },
 ];
 
 const data: DataType[] = [];
@@ -395,8 +496,7 @@ const App = () => {
   function resolveNode(arr: any, title: any) {
     const node = arr.find((node: any) => node.title === title) ?? {
       title,
-      width: 10,
-      fixed: "left",
+      width: 50,
       children: [],
     };
     if (!arr.includes(node)) arr.push(node);
@@ -405,30 +505,61 @@ const App = () => {
 
   function setColumn(input: any) {
     const result: any = [];
+    const roll = {
+      title: "roll",
+      width: 50,
+      dataIndex: "roll",
+      key: "roll",
+      fixed: "left",
+    };
+    const name = {
+      title: "name",
+      width: 50,
+      dataIndex: "name",
+      key: "name",
+      fixed: "left",
+    };
+    result.push(roll);
+    result.push(name);
     for (const { Field } of input) {
-      if (Field != "id" && Field != "date" && Field != "group_name") {
+      if (
+        Field != "id" &&
+        Field != "date" &&
+        Field != "group_name" &&
+        Field != "roll" &&
+        Field != "name" &&
+        Field != "merit"
+      ) {
         const [subject, part, suffix] = Field.split("_");
         const s = resolveNode(result, subject);
         const p = resolveNode(s.children, part);
         // Don't create duplicates:
         if (!p.children.find((node: any) => node.title === suffix)) {
-          p.children.push({ title: suffix, dataIndex: Field, width: 10 });
+          p.children.push({ title: suffix, dataIndex: Field, key: Field });
         }
       }
     }
+    const merit = {
+      title: "merit",
+      //   width: 50,
+      dataIndex: "merit",
+      key: "merit",
+      fixed: "right",
+    };
+    result.push(merit);
     return result;
   }
   const column = setColumn(tableColumn);
   const formattedJson = JSON.stringify(column, null, 2);
-  console.log(column);
+  console.log(formattedJson);
 
   return (
     <Table
-      columns={column}
+      columns={columns}
       dataSource={data}
       bordered
       size="middle"
-      //   scroll={{ x: 3000, y: 200 }}
+      scroll={{ x: 3100, y: 1000 }}
     />
   );
 };

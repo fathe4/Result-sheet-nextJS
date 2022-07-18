@@ -1,7 +1,7 @@
 import { Table } from "antd";
 import type { ColumnsType } from "antd/lib/table";
 import React, { useEffect, useState } from "react";
-import SearchFilter from "./SerachFilter";
+import SearchFilter from "../SerachFilter";
 
 interface DataType {
   key: React.Key;

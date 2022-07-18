@@ -1,11 +1,5 @@
 const excelToJson = require("convert-excel-to-json");
 import xlsx from "node-xlsx";
-import upload from "../../middleware/middleware";
-import apiRoute from "./apiRoute";
-import dbConnection from "../../config/db";
-import executeQuery from "../../config/db";
-
-apiRoute.use(upload.array("file"));
 
 const calculateSubjectTotal = (total: number) => total;
 const calculateSubjectPercentage = (subTotal: any) => {
@@ -111,25 +105,9 @@ const defineMerit = (markSheet: any) => {
     markSheet.filter((item: any) => item.merit === "Failed")
   );
 };
-const makeArrayOfArray = (values: any) => {
-  return values.map((item: any, i: number) => Object.values(item));
-};
-const query = (firstObject: any, arrayOfArrayResults: any) => {
-  let allData = "INSERT INTO business (";
-  const keys = Object.keys(firstObject);
-  for (let i = 0; i < keys.length; i++) {
-    let data = keys[i];
-    if (i == 0) allData += data;
-    else allData += ", " + data;
-  }
-  allData += ") values ?";
-  return allData;
-};
 
-apiRoute.post(async (req: any, res) => {
-  const file = req.files[0];
-  console.log(file);
-
+const insertResults = async (markSheetFile: Record<string, any>) => {
+  const file = markSheetFile;
   const filename = file.filename;
   const worksheetsArray = xlsx.parse(`./public/uploads/${filename}`);
   const excelData = excelToJson({
@@ -220,19 +198,7 @@ apiRoute.post(async (req: any, res) => {
     return merge;
   });
 
-  const merit = defineMerit(values);
-  const arrayOfArrayResults = makeArrayOfArray(merit);
-  const sql = query(merit[0], arrayOfArrayResults);
-  console.log(values);
-  //   const data = await executeQuery(sql + arrayOfArrayResults, []);
-  //   res.send(data);
-  //   dbConnection.query(
-  //     sql,
-  //     [arrayOfArrayResults],
-  //     function (err: any, result: any) {
-  //       if (err) throw err;
-  //       console.log("Number of records inserted: " + result.affectedRows);
-  //     }
-  //   );
-});
-export default apiRoute;
+  return defineMerit(values);
+};
+
+export { insertResults };

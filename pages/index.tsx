@@ -3,53 +3,10 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import * as React from "react";
-import { styled } from "@mui/material/styles";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 import App from "./Component/test";
 import ReadExcel from "./Component/ReadExcel";
 import "antd/dist/antd.css";
 const Home: NextPage = () => {
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: "#E2EFD9",
-      color: "#000",
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
-
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    "&:nth-of-type(odd)": {
-      backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    "&:last-child td, &:last-child th": {
-      border: 0,
-    },
-  }));
-  const rows = [
-    createData(1, "Fathe", 6.0, 24, 4.0),
-    createData(2, "Pinku", 9.0, 37, 4.3),
-    createData(3, "JHINKU", 16.0, 24, 6.0),
-    createData(4, "Tinku", 3.7, 67, 4.3),
-    createData(5, "Linku", 16.0, 49, 3.9),
-  ];
-  function createData(
-    roll: number,
-    name: string,
-    fat: number,
-    carbs: number,
-    protein: number
-  ) {
-    return { roll, name, fat, carbs, protein };
-  }
   const [file, setFile] = React.useState<any>();
   const [fileName, setFileName] = React.useState<any>();
   const saveFile = (e: any) => {
@@ -63,7 +20,7 @@ const Home: NextPage = () => {
     formData.append("file", file);
     formData.append("fileName", fileName);
     // setIsLoading(true)
-    fetch("/api/hello", {
+    fetch("/api/results/insertResults", {
       method: "POST",
       body: formData,
     })
@@ -98,7 +55,6 @@ const Home: NextPage = () => {
       >
         Upload
       </button>
-      <ReadExcel />
       <App />
     </div>
   );

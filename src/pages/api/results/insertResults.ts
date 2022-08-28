@@ -22,8 +22,12 @@ handler.use(upload.single("file"));
 const makeArrayOfArray = (values: any) => {
   return values.map((item: any, i: number) => Object.values(item));
 };
-const query = (firstObject: any, arrayOfArrayResults: any) => {
-  let allData = "INSERT INTO business (";
+const query = (
+  firstObject: any,
+  arrayOfArrayResults: any,
+  tableName: string
+) => {
+  let allData = "INSERT INTO " + tableName + " (";
   const keys = Object.keys(firstObject);
   for (let i = 0; i < keys.length; i++) {
     let data = keys[i];
@@ -34,9 +38,28 @@ const query = (firstObject: any, arrayOfArrayResults: any) => {
   return allData;
 };
 handler.post(async (req, res: any) => {
-  const result: any = await insertResults(req.file);
+  const result: any = await insertResults(
+    req.file,
+    req.body.table,
+    req.body.group,
+    req.body.year
+  );
+  console.log(result);
   const arrayOfArrayResults = makeArrayOfArray(result);
-  const sql = query(result[0], arrayOfArrayResults);
+  const sql = query(result[0], arrayOfArrayResults, req.body.table);
+  const insertTableListQuery = `INSERT INTO Tables_list(
+    group_name,
+    table_name,
+    year,
+    total_student
+)
+VALUES(
+    '${req.body.group}',
+    '${req.body.table}',
+    ${req.body.year},
+    ${arrayOfArrayResults.length})`;
+  console.log(insertTableListQuery);
+  const resultManagementUpdate = await executeQuery(insertTableListQuery, []);
   const data = await executeQuery(sql, [arrayOfArrayResults]);
   res.send(data);
 });

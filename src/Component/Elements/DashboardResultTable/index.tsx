@@ -5,20 +5,39 @@ import ResultModal from "../../ResultModal";
 
 const DashboardResultTable = () => {
   const [results, setResults] = useState([]);
+  const [groupsAndDate, setGroupsAndDate] = useState({ groups: [], dates: [] });
+  const [group, setGroup] = useState({
+    group_name: "Science",
+    TABLE_NAME: "Science",
+  });
+  const [date, setDate] = useState("2022");
+  const [roll, setRoll] = useState("");
   useEffect(() => {
-    fetch("http://localhost:3000/api/results/results")
+    fetch(
+      `http://localhost:3000/api/results/results?group=${group.TABLE_NAME}&year=${date}`
+    )
       .then((res) => res.json())
       .then((data) => {
+        setResults([]);
         setResults(data);
       });
+  }, [group, date]);
+  useEffect(() => {
+    fetch(`http://localhost:3000/api/results/getGroupsAndDate`)
+      .then((res) => res.json())
+      .then((data) => {
+        setGroupsAndDate(data);
+      });
   }, []);
-  //   console.log(results);
+  console.log(groupsAndDate);
 
   return (
     <div className="antialiased sans-serif bg-gray-200 h-screen">
       <div className="container mx-auto py-6 px-4">
         <div className="flex justify-between">
-          <h1 className="text-3xl py-4 border-b">Science Result</h1>
+          <h1 className="text-3xl py-4 border-b">
+            {date} {group.group_name} Result
+          </h1>
           <div>
             <div className="stats shadow">
               <div className="stat">
@@ -72,11 +91,13 @@ const DashboardResultTable = () => {
               className="md:w-40 w-full md:py-0 py-2 rounded-sm"
               size="large"
               defaultValue="2022"
-              //   onChange={}
+              onChange={(value) => setDate(value)}
             >
-              <Option value="2022">2022</Option>
-              <Option value="2021">2021</Option>
-              <Option value="2020">2020</Option>
+              {groupsAndDate.dates.map(({ year }: { year: string }, i) => (
+                <React.Fragment key={i}>
+                  <Option value={year}>{year}</Option>
+                </React.Fragment>
+              ))}
             </Select>
           </div>
 
@@ -87,16 +108,17 @@ const DashboardResultTable = () => {
             <ul
               tabIndex={0}
               className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+              onChange={(e: any) => console.log(e)}
             >
-              <li>
-                <a>Science</a>
-              </li>
-              <li>
-                <a>Business</a>
-              </li>
-              <li>
-                <a>Arts</a>
-              </li>
+              {groupsAndDate.groups.map(
+                (table: { group_name: string; TABLE_NAME: string }, i) => (
+                  <React.Fragment key={i}>
+                    <li onClick={() => setGroup(table)}>
+                      <a>{table.group_name}</a>
+                    </li>
+                  </React.Fragment>
+                )
+              )}
             </ul>
           </div>
         </div>
@@ -160,7 +182,7 @@ const DashboardResultTable = () => {
                     </td>
                     <td className="border-dashed border-t border-gray-200 gender">
                       <span className="text-gray-700 px-6 py-3 flex items-center">
-                        {result.total_gp}
+                        {result.total_GP}
                       </span>
                     </td>
                     <td className="border-dashed border-t border-gray-200 phoneNumber">
@@ -180,6 +202,7 @@ const DashboardResultTable = () => {
                     </td>
                     <td className="border-dashed border-t border-gray-200 phoneNumber">
                       <label
+                        onClick={() => setRoll(result.roll)}
                         htmlFor="my-modal-5"
                         className="text-gray-700 px-6 py-3 flex items-center cursor-pointer"
                       >
@@ -193,7 +216,7 @@ const DashboardResultTable = () => {
           </table>
         </div>
       </div>
-      <ResultModal />
+      <ResultModal group={group} date={date} roll={roll} />
     </div>
   );
 };

@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../Elements/Modal";
 
-const ResultModal = () => {
+const ResultModal = ({
+  group,
+  date,
+  roll,
+}: {
+  group: string;
+  date: string;
+  roll: string;
+}) => {
   const [studentResult, setStudentResult] = useState<any>({});
   const [filterStudentResult, setFilterStudentResult] = useState<any>({});
   const [searchByName, setSearchByName] = useState<any>();
@@ -10,7 +18,7 @@ const ResultModal = () => {
     setIsLoading(true);
     // if (studentResult === {}) {
     fetch(
-      `http://localhost:3000/api/results/studentResult?date=${2022}&&group=${"business"}&&roll=${"1403"}`
+      `http://localhost:3000/api/results/studentResult?date=${date}&&group=${group}&&roll=${roll}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -19,7 +27,7 @@ const ResultModal = () => {
       })
       .finally(() => setIsLoading(false));
     // }
-  }, [searchByName]);
+  }, [date, group, roll, searchByName]);
 
   const filterByName = (searchText: string) => {
     if (searchText == "") return setIsLoading(true);

@@ -3,6 +3,7 @@ import DashboardCards from "../../Component/Elements/DashboardCards";
 import DashboardResultTable from "../../Component/Elements/DashboardResultTable";
 import ResultModal from "../../Component/ResultModal";
 import ResultsDataTable from "../../Component/ResultsDataTable";
+import UploadedResults from "../../Component/ManageResults";
 import UploadResultModal from "../../Component/UploadResultModal";
 import CreateTable from "./CreateTable";
 
@@ -92,31 +93,7 @@ const Dashboard = () => {
                       <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                     </svg>
                   </span>
-                  <span className="ml-3">Table heading</span>
-                </a>
-              </li>
-              <li className="my-px">
-                <a
-                  href="#"
-                  className="flex flex-row items-center h-10 px-3 rounded-lg text-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                >
-                  <span className="flex items-center justify-center text-lg text-gray-400">
-                    <svg
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      className="h-6 w-6"
-                    >
-                      <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </span>
-                  <span className="ml-3">Clients</span>
-                  <span className="flex items-center justify-center text-xs text-red-500 font-semibold bg-red-100 h-6 px-2 rounded-full ml-auto">
-                    1k
-                  </span>
+                  <span className="ml-3">Manage Results</span>
                 </a>
               </li>
               <li className="my-px">
@@ -138,7 +115,7 @@ const Dashboard = () => {
                     </svg>
                   </span>
                   <label htmlFor="upload-result-modal" className="ml-3">
-                    Add new result
+                    Upload result
                   </label>
                 </a>
               </li>
@@ -306,9 +283,11 @@ const Dashboard = () => {
             <h1 className="font-bold text-2xl text-gray-700">Dashboard</h1>
 
             <div className="flex flex-col flex-grow border-4 border-gray-400 border-dashed bg-white rounded mt-4">
-              {/* <DashboardResultTable /> */}
+              <DashboardResultTable />
               <CreateTable />
               <UploadResultModal />
+              <DashboardCards />
+              <UploadedResults />
             </div>
           </div>
           <footer className="footer px-4 py-6">

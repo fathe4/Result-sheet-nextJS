@@ -14,6 +14,8 @@ const Home: NextPage = () => {
 
   const uploadFile = async (e: any) => {
     e.preventDefault();
+    console.log(file, fileName);
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("fileName", fileName);
@@ -44,7 +46,6 @@ const Home: NextPage = () => {
         id="file-upload"
         name="file-upload"
         type="file"
-        className="sr-only"
       />
       <button
         onClick={(e) => uploadFile(e)}

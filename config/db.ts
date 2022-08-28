@@ -22,7 +22,7 @@ const pool = createPool({
 });
 pool.getConnection((err) => {
   if (err) {
-    return console.log("error connecting to db");
+    return console.log("error connecting to db", err);
   }
   console.log("Connected to db");
 });

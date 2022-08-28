@@ -45,8 +45,8 @@ const calculateGPA = (
   calculateGradePoints: any,
   subjects: any
 ) => {
-  const forthSub1 = calculateGradePoints.production_GP;
-  const forthSub2 = calculateGradePoints.economics_GP;
+  const forthSub1 = calculateGradePoints.Production_GP;
+  const forthSub2 = calculateGradePoints.Economics_GP;
   const totalSubWithoutFourthSub = 5;
   if (Object.values(subjects).includes("A")) return "Failed";
   if (forthSub1 == 0 || forthSub2 == 0) {
@@ -105,10 +105,66 @@ const defineMerit = (markSheet: any) => {
     markSheet.filter((item: any) => item.merit === "Failed")
   );
 };
+const getTableHeading = async (tableName: string) => {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/table/tableColumns?tableName="${tableName}"`
+    );
+    const data = await res.json();
+    return addKeyLetter(data);
+    // console.log(data);
+  } catch (err) {
+    console.log(err);
+  }
+};
+function convertToColumn(n: any) {
+  if (n == 0) return null;
+  let result = "";
+  while (n > 0) {
+    let r = n % 26;
+    let d = parseInt(n / 26);
+    if (r == 0) {
+      r = 26;
+      d = d - 1;
+    }
+    result += String.fromCharCode(64 + r);
+    n = d;
+  }
+  return result.split("").reverse().join("");
+}
+const addKeyLetter = (data: any = []) => {
+  const mapped = data
+    .filter(
+      (item: any) =>
+        item.column_name != "id" &&
+        item.column_name != "group_name" &&
+        item.column_name != "year" &&
+        item.column_name != "created_table_at" &&
+        item.column_name != "total_marks" &&
+        item.column_name != "total_GP" &&
+        item.column_name != "GPA" &&
+        item.column_name != "total_failed" &&
+        item.column_name != "merit"
+    )
+    .map((item: any, i: any) => ({
+      [convertToColumn(i + 1)]: item.column_name,
+    }));
+  const object = Object.assign({}, ...mapped);
+  return object;
+  //   console.log(object);
+};
 
-const insertResults = async (markSheetFile: Record<string, any>) => {
+const insertResults = async (
+  markSheetFile: Record<string, any>,
+  tableName: string,
+  group: string,
+  year: string
+) => {
   const file = markSheetFile;
   const filename = file.filename;
+  const tableHeading = await getTableHeading(tableName);
+  console.log(tableHeading);
+
   const worksheetsArray = xlsx.parse(`./public/uploads/${filename}`);
   const excelData = excelToJson({
     sourceFile: `./public/uploads/${filename}`,
@@ -121,36 +177,37 @@ const insertResults = async (markSheetFile: Record<string, any>) => {
           rows: 3,
         },
         // Mapping columns to keys
-        columnToKey: {
-          A: "roll",
-          B: "name",
-          C: "bangla_1st_CQ",
-          D: "bangla_1st_MCQ",
-          E: "bangla_2nd_CQ",
-          F: "bangla_2nd_MCQ",
-          G: "english_1st_CQ",
-          H: "english_2nd_CQ",
-          I: "accounting_1st_CQ",
-          J: "accounting_1st_MCQ",
-          K: "accounting_2nd_CQ",
-          L: "accounting_2nd_MCQ",
-          M: "business_1st_CQ",
-          N: "business_1st_MCQ",
-          O: "business_2nd_CQ",
-          P: "business_2nd_MCQ",
-          Q: "production_1st_CQ",
-          R: "production_1st_MCQ",
-          S: "production_2nd_CQ",
-          T: "production_2nd_MCQ",
-          U: "finance_1st_CQ",
-          V: "finance_1st_MCQ",
-          W: "finance_2nd_CQ",
-          X: "finance_2nd_MCQ",
-          Y: "economics_1st_CQ",
-          Z: "economics_1st_MCQ",
-          AA: "economics_2nd_CQ",
-          AB: "economics_2nd_MCQ",
-        },
+        columnToKey: tableHeading,
+        // columnToKey: {
+        //   A: "roll",
+        //   AA: "economics_2nd_CQ",
+        //   B: "name",
+        //   C: "bangla_1st_CQ",
+        //   D: "bangla_1st_MCQ",
+        //   E: "bangla_2nd_CQ",
+        //   F: "bangla_2nd_MCQ",
+        //   G: "english_1st_CQ",
+        //   H: "english_2nd_CQ",
+        //   I: "accounting_1st_CQ",
+        //   J: "accounting_1st_MCQ",
+        //   K: "accounting_2nd_CQ",
+        //   L: "accounting_2nd_MCQ",
+        //   M: "business_1st_CQ",
+        //   N: "business_1st_MCQ",
+        //   O: "business_2nd_CQ",
+        //   P: "business_2nd_MCQ",
+        //   Q: "production_1st_CQ",
+        //   R: "production_1st_MCQ",
+        //   S: "production_2nd_CQ",
+        //   T: "production_2nd_MCQ",
+        //   U: "finance_1st_CQ",
+        //   V: "finance_1st_MCQ",
+        //   W: "finance_2nd_CQ",
+        //   X: "finance_2nd_MCQ",
+        //   Y: "economics_1st_CQ",
+        //   Z: "economics_1st_MCQ",
+        //   AB: "economics_2nd_MCQ",
+        // },
       },
     ],
   });
@@ -175,6 +232,8 @@ const insertResults = async (markSheetFile: Record<string, any>) => {
       "_GP",
       calculateGradePoint
     );
+    console.log(subjects);
+
     const totalMarks = calculateTotalMarks(subjects);
     const totalGradePoint = calculateTotalGradePoint(subjectGradePoints);
     const GPA = calculateGPA(totalGradePoint, subjectGradePoints, subjects);
@@ -183,13 +242,13 @@ const insertResults = async (markSheetFile: Record<string, any>) => {
       id: null,
       roll,
       name,
-      date: "2022",
-      group_name: "business",
-      english_total: subjects.english_1st_CQ + subjects.english_2nd_CQ,
+      year: year,
+      group_name: group,
+      //   english_total: subjects.English_1st_CQ + subjects.English_2nd_CQ,
       ...subjects,
-      ...subjectTotal,
-      ...subjectPercentages,
-      ...subjectGradePoints,
+      //   ...subjectTotal,
+      //   ...subjectPercentages,
+      //   ...subjectGradePoints,
       total_marks: totalMarks,
       total_GP: totalGradePoint,
       GPA,

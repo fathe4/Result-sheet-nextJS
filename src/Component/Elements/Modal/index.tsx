@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 interface Modal {
   modalId: string;
   children: ReactNode;
-  width: string;
+  width?: string;
 }
 
 const Modal = (props: Modal) => {

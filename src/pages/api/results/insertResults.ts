@@ -59,7 +59,9 @@ VALUES(
     ${req.body.year},
     ${arrayOfArrayResults.length})`;
   console.log(insertTableListQuery);
+  console.log(arrayOfArrayResults);
   const resultManagementUpdate = await executeQuery(insertTableListQuery, []);
+
   const data = await executeQuery(sql, [arrayOfArrayResults]);
   res.send(data);
 });

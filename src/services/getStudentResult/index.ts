@@ -20,12 +20,13 @@ const subjects = (data: any) => {
     const [subjectName, subjectPosition, suffix] = key.split("_");
     if (
       subjectName != "id" &&
-      subjectName != "date" &&
+      subjectName != "year" &&
       subjectName != "group" &&
       subjectName != "roll" &&
       subjectName != "name" &&
       subjectName != "merit" &&
       subjectName != "GPA" &&
+      subjectName != "created" &&
       subjectName != "total"
     ) {
       let subj = subject.find(
@@ -52,9 +53,13 @@ const subjects = (data: any) => {
           // initializae the position
           subj[pos] = {
             subject: capitalize(subjectName) + " " + subjectPosition,
+            // columnName: key,
           };
         }
         subj[pos][suffix] = value;
+        // subj["columnName"] = key;
+
+        // subj[pos] = key;
       }
     }
   });
@@ -63,24 +68,25 @@ const subjects = (data: any) => {
     name: data.name,
     merit: data.merit,
     GPA: data.GPA,
+    year: data.year,
     total: data.total_marks,
     group: data.group_name,
     totalFailed: data.total_failed,
   };
-  return { result: subject, studentDetails };
+  return { results: subject, studentDetails };
 };
 const getStudentResult = async (req: any, res: any) => {
-  const { date, roll, group } = req.query;
-  console.log(date, roll, group);
+  const { year, roll, tableName } = req.query;
+  console.log(req.query, "ss");
 
   const data: any = await executeQuery(
-    `SELECT * FROM ${group} WHERE date = ${date} && roll = ${roll}`,
+    `SELECT * FROM ${tableName} WHERE year = ${year} && roll = ${roll}`,
     []
   );
   const studentResult = subjects(data[0]);
   console.log(data);
 
-  res.send(data[0]);
+  res.send(studentResult);
 };
 
 export { getStudentResult };

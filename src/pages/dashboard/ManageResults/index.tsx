@@ -1,54 +1,22 @@
 import CsvDownloader from "react-csv-downloader";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useGetAllGroupsResult } from "../../hooks/Query";
+import {
+  useDeleteGroupResults,
+  useGetGroupResults,
+} from "../../hooks/Mutation";
+import DashboardLayout from "../../../Component/Layout/DashboardLayout";
 
-const DashboardResultTable = () => {
-  const [results, setResults] = useState([]);
-  useEffect(() => {
-    fetch("http://localhost:3000/api/results/allGroupResults")
-      .then((res) => res.json())
-      .then((data) => setResults(data));
-  }, []);
-
-  const handleDeleteAll = async (tableName: string, year: string) => {
-    console.log(tableName, year);
-    // formData.append("year", year);
-    fetch("/api/results/deleteResults", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        tableName,
-        year,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-  console.log(results);
+const ManageResults = () => {
+  const { data: groupResults } = useGetAllGroupsResult();
+  const { mutateAsync: getGroupResult } = useGetGroupResults();
+  const { mutate: handleDeleteResults } = useDeleteGroupResults();
 
   const downloadCSV = async (result: any) => {
-    return await fetch(
-      `http://localhost:3000/api/results/results?group=${result.table_name}&year=${result.year}`
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        const filteredData = data.map((result: any) => {
-          const clonedResult = JSON.parse(JSON.stringify(result));
-          delete clonedResult.id;
-          delete clonedResult.created_table_at;
-          delete clonedResult.group_name;
-          delete clonedResult.year;
-          return clonedResult;
-        });
-        return filteredData;
-      });
+    const data = await getGroupResult(result);
+    return data.map(
+      ({ id, created_table_at, group_name, year, ...rest }: any) => rest
+    );
   };
   return (
     <div className="antialiased sans-serif bg-gray-200 h-screen">
@@ -81,7 +49,7 @@ const DashboardResultTable = () => {
               </tr>
             </thead>
             <tbody>
-              {results.map((result: any, i: number) => (
+              {groupResults.map((result: any, i: number) => (
                 <tr key={result.id}>
                   <td className="border-dashed border-t border-gray-200 userId">
                     <span className="text-gray-700 px-6 py-3 flex items-center">
@@ -110,23 +78,23 @@ const DashboardResultTable = () => {
                   </td>
                   <td className="border-dashed border-t border-gray-200 gender">
                     <span className="text-gray-700 px-6 py-3 flex items-center">
-                      {/* <button className="btn btn-xs">Download</button> */}
                       <CsvDownloader
                         filename={
                           result.group_name + "-" + result.year + "-result"
                         }
                         datas={() => downloadCSV(result)}
                       >
-                        <button className="border border-green-500 bg-green-500 text-white rounded-md px-2 py-1 transition duration-500 ease select-none hover:bg-green-600 focus:outline-none focus:shadow-outline">
-                          Download
-                        </button>
+                        <button className="btn btn-xs">Download</button>
                       </CsvDownloader>
                     </span>
                   </td>
                   <td className="border-dashed border-t border-gray-200 phoneNumber">
                     <button
                       onClick={() =>
-                        handleDeleteAll(result.table_name, result.year)
+                        handleDeleteResults({
+                          tableName: result.table_name,
+                          year: result.year,
+                        })
                       }
                       className="border border-red-500 bg-red-500 text-white rounded-md px-2 py-1 transition duration-500 ease select-none hover:bg-red-600 focus:outline-none focus:shadow-outline"
                     >
@@ -142,5 +110,5 @@ const DashboardResultTable = () => {
     </div>
   );
 };
-
-export default DashboardResultTable;
+ManageResults.Layout = DashboardLayout;
+export default ManageResults;

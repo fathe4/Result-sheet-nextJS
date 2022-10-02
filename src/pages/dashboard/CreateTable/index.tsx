@@ -1,68 +1,22 @@
 import { Popconfirm } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import DashboardLayout from "../../../Component/Layout/DashboardLayout";
 import TableHeadingPopup from "../../../Component/TableHeadingPopup";
+import { useCreateTable, useDeleteTable } from "../../hooks/Mutation";
+import { useGetTables } from "../../hooks/Query";
 
-interface categories {
-  _id: number;
-  attribute_Title: string;
-  label: string;
-  slug: string;
-  vendor: string;
-  options: {
-    label: string;
-    value: string;
-  };
-}
 export default function CreateTable() {
-  const [tables, setTables] = useState([]);
   const [tableName, setTableName] = useState("");
-  useEffect(() => {
-    fetch("http://localhost:3000/api/table/allTables")
-      .then((res) => res.json())
-      .then((data) => setTables(data));
-  }, []);
+  const { data: tables } = useGetTables();
+  const { mutate: createTable } = useCreateTable();
+  const { mutate: deleteTable } = useDeleteTable();
 
   const handleCreateTable = (e: any) => {
     e.preventDefault();
-    // setIsLoading(true)
-    fetch("/api/table/createTable", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        tableName: e.target.tableName.value?.split(" ")?.join("_"),
-        groupName: e.target.groupName.value,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  };
-  const deleteTable = (tableName: string) => {
-    console.log(tableName, tableName);
-    fetch("/api/table/delete", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        deleteTable: tableName,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    createTable({
+      tableName: e.target.tableName.value?.split(" ")?.join("_"),
+      groupName: e.target.groupName.value,
+    });
   };
 
   return (
@@ -117,7 +71,7 @@ export default function CreateTable() {
                 </tr>
               </thead>
               <tbody>
-                {tables.map((table: { TablesName: string }, i) => (
+                {tables.map((table: { TablesName: string }, i: number) => (
                   <tr key={i} className="hover:bg-grey-lighter">
                     <td className="py-4 px-6 border-b border-grey-light">
                       {table.TablesName}
@@ -148,7 +102,10 @@ export default function CreateTable() {
           </div>
         </div>
       </div>
-      <TableHeadingPopup tableName={tableName} />
+      {tableName && (
+        <TableHeadingPopup tableName={tableName} setTableName={setTableName} />
+      )}
     </div>
   );
 }
+CreateTable.Layout = DashboardLayout;

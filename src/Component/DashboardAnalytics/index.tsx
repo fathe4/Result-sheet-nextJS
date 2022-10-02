@@ -1,6 +1,7 @@
 import * as React from "react";
+import DashboardLayout from "../Layout/DashboardLayout";
 
-const DashboardCards = () => {
+const DashboardAnalytics = () => {
   return (
     <>
       <div className="stats shadow container mx-auto my-6">
@@ -70,5 +71,6 @@ const DashboardCards = () => {
     </>
   );
 };
+DashboardAnalytics.Layout = DashboardLayout;
 
-export default DashboardCards;
+export default DashboardAnalytics;

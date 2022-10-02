@@ -4,7 +4,7 @@ const tableColumns = async (req: any, res: any) => {
   //   console.log("SHOW COLUMNS FROM " + tableName);
   //   const data = await executeQuery("SHOW COLUMNS FROM " + tableName, []);
   const data = await executeQuery(
-    `SELECT column_name FROM information_schema.columns WHERE table_name=${tableName}`,
+    `SELECT column_name FROM information_schema.columns WHERE table_name='${tableName}'`,
     []
   );
   //   const data = await executeQuery(

@@ -75,26 +75,20 @@ class Api {
     data: unknown,
     headers?: AxiosRequestHeaders
   ) {
-    const isClient = typeof window !== "undefined";
-    const defaultHeaders = {
-      moquiSessionToken:
-        (isClient && localStorage.getItem("moquiSessionToken")) || "",
-    };
+    // const isClient = typeof window !== "undefined";
+    // const defaultHeaders = {
+    //   moquiSessionToken:
+    //     (isClient && localStorage.getItem("moquiSessionToken")) || "",
+    // };
     return new Promise((resolve, reject) => {
       api({
         url,
         method,
         params,
-        headers: { ...defaultHeaders, ...headers },
+        headers: { ...headers },
         data,
       })
         .then((response) => {
-          if (response.headers.moquisessiontoken && isClient) {
-            localStorage.setItem(
-              "moquiSessionToken",
-              response.headers.moquisessiontoken
-            );
-          }
           resolve(response.data);
         })
         .catch((error: AxiosError) => reject(error));

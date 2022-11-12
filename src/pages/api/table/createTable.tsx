@@ -14,7 +14,7 @@ handler.post(async (req, res: any) => {
   const createTableSQL =
     "CREATE TABLE IF NOT EXISTS " +
     tableName +
-    " (id INT AUTO_INCREMENT PRIMARY KEY, group_name VARCHAR(255) NOT NULL,date int(4) NOT NULL, created_table_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)  ENGINE=INNODB";
+    " (id INT AUTO_INCREMENT PRIMARY KEY, group_name VARCHAR(255) NOT NULL,date int(4) NOT NULL, year int(4) NOT NULL, created_table_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)  ENGINE=INNODB";
   console.log(createTableSQL, "CreateTable.tsx");
 
   const data = await executeQuery(createTableSQL, []);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useGetGroupResults } from "../../pages/hooks/Mutation";
-import { useGetStudentResult } from "../../pages/hooks/Query";
+import { useGetGroupResults } from "../../hooks/Mutation";
+import { useGetStudentResult } from "../../hooks/Query";
 import Modal from "../Elements/Modal";
 
 const ResultModal = ({
@@ -31,7 +31,7 @@ const ResultModal = ({
         year,
         roll,
       });
-      setStudentResult(response[0]);
+      setStudentResult(response.data[0]);
     }
     fetchData();
   }, [group, year, roll, getStudentResult]);
@@ -111,8 +111,8 @@ const ResultModal = ({
               <table className="w-full sm:bg-white rounded-lg overflow-hidden  my-5">
                 <thead className="text-white">
                   <tr className="bg-base-content flex flex-col flex-no wrap sm:table-row rounded-l-lg sm:rounded-none mb-2 sm:mb-0">
-                    <th className="p-3 text-left">Subject</th>
-                    <th className="p-3 text-left">Subject Part 1</th>
+                    <th className="p-3 text-left">Details Name</th>
+                    <th className="p-3 text-left">Details Value</th>
                     {/* <th className="p-3 text-left">Subject Part 2</th> */}
                     <th className="p-3 text-left">Actions</th>
                   </tr>

@@ -6,8 +6,8 @@ import {
   useCreateColumn,
   useDeleteColumn,
   useUpdateColumn,
-} from "../../pages/hooks/Mutation";
-import { useGetColumns } from "../../pages/hooks/Query";
+} from "../../hooks/Mutation";
+import { useGetColumns } from "../../hooks/Query";
 
 interface DataType {
   column_name: string;

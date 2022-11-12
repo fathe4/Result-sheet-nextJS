@@ -7,6 +7,8 @@ const ResultTable = ({
   results: any;
   setSelect: Function;
 }) => {
+  console.log(results);
+
   return (
     <table className="border-collapse table-auto w-full whitespace-no-wrap bg-white table-striped relative">
       <thead>
@@ -75,8 +77,12 @@ const ResultTable = ({
                 </span>
               </td>
               <td className="border-dashed border-t border-gray-200 phoneNumber">
-                <span className="rounded bg-green-400 py-1 px-3 text-xs font-bold">
-                  Passed
+                <span
+                  className={`rounded ${
+                    result.GPA === "Failed" ? "bg-red-500" : "bg-green-400"
+                  } py-1 px-3 text-xs font-bold`}
+                >
+                  {result.GPA === "Failed" ? "Failed" : "Passed"}
                 </span>
               </td>
               <td className="border-dashed border-t border-gray-200 phoneNumber">

@@ -4,24 +4,27 @@ import executeQuery from "../../../../config/db";
 const handler = nc(errorHandler);
 
 handler.get(async (req, res: any) => {
-  let groupQuery = "SELECT group_name, TABLE_NAME FROM Tables_list";
+  const groupQuery = "SELECT DISTINCT group_name, table_name FROM Tables_list";
   const groups = await executeQuery(groupQuery, []);
   const tables: any = await executeQuery(
     `SELECT Table_name as TablesName from information_schema.tables where table_schema = 'resultSheet'`,
     []
   );
-  let dateQuery = "";
-  for (let i = 0; i < tables.length; i++) {
-    if (tables[i].TablesName !== "Tables_list") {
-      console.log(i === tables.length - 2);
+  console.log(groupQuery);
 
-      if (i === tables.length - 2) {
-        dateQuery += ` SELECT year FROM ${tables[i].TablesName}`;
-      } else {
-        dateQuery += ` SELECT year FROM ${tables[i].TablesName} UNION`;
-      }
-    }
-  }
+  let dateQuery =
+    "SELECT DISTINCT year FROM Tables_list WHERE year IS NOT NULL";
+  //   for (let i = 0; i < tables.length; i++) {
+  //     if (tables[i].TablesName !== "Tables_list") {
+  //       if (i === tables.length - 2) {
+  //         dateQuery += ` SELECT year FROM ${tables[i].TablesName}`;
+  //       } else {
+  //         dateQuery += ` SELECT year FROM ${tables[i].TablesName} UNION`;
+  //       }
+  //     }
+  //   }
+  //   dateQuery += ";";
+  //   console.log(dateQuery);
   const dates = await executeQuery(dateQuery, []);
   res.send({ groups, dates });
 });

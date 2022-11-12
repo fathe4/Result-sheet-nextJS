@@ -5,57 +5,69 @@ import Filter from "../../../Component/Elements/Filter";
 import ResultTable from "../../../Component/Elements/ResultTable";
 import DashboardLayout from "../../../Component/Layout/DashboardLayout";
 import ResultModal from "../../../Component/ResultModal";
-import { useGetGroupResults } from "../../../pages/hooks/Mutation";
-import { useGetGroupsAndDate } from "../../../pages/hooks/Query";
+import { useGetGroupResults } from "../../../hooks/Mutation";
+import { useGetGroupsAndDate } from "../../../hooks/Query";
 
 const DashboardResultTable = () => {
   const [group, setGroup] = useState({
-    group_name: "Science",
+    value: "Science",
     table_name: "Science",
   });
-  const [year, setYear] = useState("2022");
+  const [year, setYear] = useState(new Date().getFullYear().toString());
   const [roll, setRoll] = useState("");
-  const { mutate: getGroupResults, data: results = [] } = useGetGroupResults();
+  const [searchResultByRoll, setSearchResultByRoll] = useState("");
+  const {
+    mutate: getGroupResults,
+    data: results = { data: [], totalFailed: [] },
+  } = useGetGroupResults();
   const { data: groupsAndDate } = useGetGroupsAndDate();
   useEffect(() => {
-    getGroupResults({ table_name: group.table_name, year });
-  }, [getGroupResults, group, year]);
+    getGroupResults({
+      table_name: group.table_name,
+      year,
+      roll: searchResultByRoll,
+    });
+  }, [getGroupResults, group, year, searchResultByRoll]);
   const filterOptions = groupsAndDate.groups.map(
-    (group: { group_name: string; TABLE_NAME: string }) => ({
+    (group: { group_name: string; table_name: string }) => ({
       value: group.group_name,
       label: group.group_name,
-      table_name: group.TABLE_NAME,
+      table_name: group.table_name,
     })
   );
-  console.log(groupsAndDate, "results");
+  console.log(group, "group");
 
   return (
     <div className="antialiased sans-serif bg-gray-200 h-screen">
       <div className="container mx-auto py-6 px-4">
         <div className="flex justify-between">
-          <h1 className="text-3xl py-4 border-b">
-            {year} {group.group_name} Result
+          <h1 className="text-3xl py-4 border-b font-sans font-semibold">
+            {year} {group.value} Result
           </h1>
           <div>
             <div className="stats shadow">
               <div className="stat">
                 <div className="stat-title">Total student</div>
-                <div className="text-lg font-bold">1070</div>
-                {/* <div className="stat-desc">21% more than last month</div> */}
+                <div className="text-lg font-bold">{results.data.length}</div>
+                <div className="stat-desc">21% more than last month</div>
               </div>
             </div>
             <div className="stats shadow mx-2">
               <div className="stat">
                 <div className="stat-title">Total Passed</div>
-                <div className="text-lg font-bold">950</div>
-                {/* <div className="stat-desc">21% more than last month</div> */}
+                <div className="text-lg font-bold">
+                  {results.data.length - results.totalFailed.length}
+                </div>
+                <div className="stat-desc">21% more than last month</div>
               </div>
             </div>
             <div className="stats shadow">
               <div className="stat">
                 <div className="stat-title">Total Failed</div>
-                <div className="text-lg font-bold">120</div>
-                {/* <div className="stat-desc">21% more than last month</div> */}
+                <div className="text-lg font-bold">
+                  {results.totalFailed.length}
+                </div>
+                <div className="stat-desc">21% more than last month</div>
               </div>
             </div>
           </div>
@@ -67,6 +79,7 @@ const DashboardResultTable = () => {
                 type="search"
                 className="w-80 pl-10 pr-4 py-2 rounded-lg shadow focus:outline-none focus:shadow-outline text-gray-600 font-medium"
                 placeholder="Search by roll"
+                onChange={(e) => setSearchResultByRoll(e.target.value)}
               />
               <div className="absolute top-0 left-0 inline-flex items-center p-2">
                 <svg
@@ -104,7 +117,7 @@ const DashboardResultTable = () => {
         </div>
 
         <div className="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative">
-          <ResultTable results={results} setSelect={setRoll} />
+          <ResultTable results={results.data} setSelect={setRoll} />
         </div>
       </div>
       {roll && <ResultModal group={group.table_name} year={year} roll={roll} />}

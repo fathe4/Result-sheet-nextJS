@@ -2,8 +2,8 @@ import { Popconfirm } from "antd";
 import React, { useState } from "react";
 import DashboardLayout from "../../../Component/Layout/DashboardLayout";
 import TableHeadingPopup from "../../../Component/TableHeadingPopup";
-import { useCreateTable, useDeleteTable } from "../../hooks/Mutation";
-import { useGetTables } from "../../hooks/Query";
+import { useCreateTable, useDeleteTable } from "../../../hooks/Mutation";
+import { useGetTables } from "../../../hooks/Query";
 
 export default function CreateTable() {
   const [tableName, setTableName] = useState("");

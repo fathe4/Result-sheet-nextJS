@@ -44,7 +44,7 @@ handler.post(async (req, res: any) => {
     req.body.group,
     req.body.year
   );
-  console.log(result);
+  console.log(result, "result");
   const arrayOfArrayResults = makeArrayOfArray(result);
   const sql = query(result[0], arrayOfArrayResults, req.body.table);
   const insertTableListQuery = `INSERT INTO Tables_list(
@@ -58,11 +58,12 @@ VALUES(
     '${req.body.table}',
     ${req.body.year},
     ${arrayOfArrayResults.length})`;
-  console.log(insertTableListQuery);
-  console.log(arrayOfArrayResults);
-  const resultManagementUpdate = await executeQuery(insertTableListQuery, []);
+  //   console.log(insertTableListQuery, "insertTableListQuery");
+  //   console.log(arrayOfArrayResults, "arrayOfArrayResults");
 
-  const data = await executeQuery(sql, [arrayOfArrayResults]);
-  res.send(data);
+  //   const resultManagementUpdate = await executeQuery(insertTableListQuery, []);
+
+  //   const data = await executeQuery(sql, [arrayOfArrayResults]);
+  //   res.send(data);
 });
 export default handler;

@@ -1,10 +1,10 @@
 import CsvDownloader from "react-csv-downloader";
 import React, { useState } from "react";
-import { useGetAllGroupsResult } from "../../hooks/Query";
+import { useGetAllGroupsResult } from "../../../hooks/Query";
 import {
   useDeleteGroupResults,
   useGetGroupResults,
-} from "../../hooks/Mutation";
+} from "../../../hooks/Mutation";
 import DashboardLayout from "../../../Component/Layout/DashboardLayout";
 
 const ManageResults = () => {

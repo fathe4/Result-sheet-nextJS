@@ -75,17 +75,30 @@ const subjects = (data: any) => {
   };
   return { results: subject, studentDetails };
 };
+const getTables = async () => {
+  try {
+    const res = await fetch(`http://localhost:3000/api/table/allTables`);
+    const data = await res.json();
+    // console.log(data);
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
+};
 const getStudentResult = async (req: any, res: any) => {
   const { year, roll, tableName } = req.query;
-  console.log(req.query, "ss");
-
+  const tables = await getTables();
+  const requestTable = tables.find(
+    (table: { TablesName: string }) =>
+      table.TablesName.toLocaleLowerCase() === tableName.toLocaleLowerCase()
+  );
   const data: any = await executeQuery(
-    `SELECT * FROM ${tableName} WHERE year = ${year} && roll = ${roll}`,
+    `SELECT * FROM ${requestTable.TablesName} WHERE year = ${year} && roll = ${roll}`,
     []
   );
-  const studentResult = subjects(data[0]);
   console.log(data);
 
+  const studentResult = subjects(data[0]);
   res.send(studentResult);
 };
 

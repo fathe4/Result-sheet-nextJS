@@ -1,16 +1,20 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Select, Input } from "antd";
 import Link from "next/link";
+import { useGetGroupsAndDate } from "../../hooks/Query";
 
 const SearchFilter: React.FunctionComponent = (props) => {
   const { Option } = Select;
   const [roll, setRoll] = useState<number>();
-  const [group, setGroup] = useState("science");
-  const [date, setDate] = useState("2022");
+  const [group, setGroup] = useState("Science");
+  const [year, setYear] = useState("2022");
+  const { data: groupsAndDate } = useGetGroupsAndDate();
   const handleSelect = (e: any) => {
     e.preventDefault();
-    console.log(`selected`, roll, group, date);
+    console.log(`selected`, roll, group, year);
   };
+  console.log(groupsAndDate);
+
   return (
     <div className="flex justify-center my-10">
       <div className="md:w-1/3 w-96 gap-2 flex md:flex-row flex-col">
@@ -23,26 +27,32 @@ const SearchFilter: React.FunctionComponent = (props) => {
           onChange={(e: any) => setRoll(e.target.value)}
         />
         <Select
-          className="md:w-40 w-full md:py-0 py-2"
+          className="md:w-40 w-full md:py-0 py-2 rounded-sm"
           size="large"
           defaultValue="science"
-          onChange={setGroup}
+          onChange={(value) => setGroup(value)}
         >
-          <Option value="science">Science</Option>
-          <Option value="business">Commerce</Option>
-          <Option value="arts">Arts</Option>
+          {groupsAndDate.groups.map(
+            ({ group_name }: { group_name: string }, i: number) => (
+              <React.Fragment key={i}>
+                <Option value={group_name}>{group_name}</Option>
+              </React.Fragment>
+            )
+          )}
         </Select>
         <Select
-          className="md:w-40 w-full md:py-0 py-2"
+          className="md:w-40 w-full md:py-0 py-2 rounded-sm"
           size="large"
           defaultValue="2022"
-          onChange={setDate}
+          onChange={(value) => setYear(value)}
         >
-          <Option value="2022">2022</Option>
-          <Option value="2021">2021</Option>
-          <Option value="2020">2020</Option>
+          {groupsAndDate.dates.map(({ year }: { year: string }, i: number) => (
+            <React.Fragment key={i}>
+              <Option value={year}>{year}</Option>
+            </React.Fragment>
+          ))}
         </Select>
-        <Link href={`/result?date=${date}&&group=${group}&&roll=${roll}`}>
+        <Link href={`/result?year=${year}&&group=${group}&&roll=${roll}`}>
           <button
             disabled={!roll && true}
             type="submit"

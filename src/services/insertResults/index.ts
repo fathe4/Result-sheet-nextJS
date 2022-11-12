@@ -1,5 +1,7 @@
 const excelToJson = require("convert-excel-to-json");
+var Excel = require("exceljs");
 import xlsx from "node-xlsx";
+const XlsxPopulate = require("xlsx-populate");
 
 const calculateSubjectTotal = (total: number) => total;
 const calculateSubjectPercentage = (subTotal: any) => {
@@ -19,7 +21,6 @@ const calculateGradePoint = (percentage: number) => {
   if (percentage < 33) GP = 0;
   return GP;
 };
-
 const calculateTotalMarks = (subjects: any) => {
   let total = 0;
   Object.keys(subjects).map(function (key: any, index) {
@@ -33,7 +34,6 @@ const calculateTotalMarks = (subjects: any) => {
   });
   return total;
 };
-
 const calculateTotalGradePoint = (calculateGradePoints: any) => {
   return Object.entries(calculateGradePoints).reduce(
     (total: any, [key, value]) => total + value,
@@ -108,9 +108,10 @@ const defineMerit = (markSheet: any) => {
 const getTableHeading = async (tableName: string) => {
   try {
     const res = await fetch(
-      `http://localhost:3000/api/table/tableColumns?tableName="${tableName}"`
+      `http://localhost:3000/api/table/tableColumns?tableName=${tableName}`
     );
     const data = await res.json();
+    console.log(data, "data");
     return addKeyLetter(data);
     // console.log(data);
   } catch (err) {
@@ -163,7 +164,22 @@ const insertResults = async (
   const file = markSheetFile;
   const filename = file.filename;
   const tableHeading = await getTableHeading(tableName);
-  console.log(tableHeading);
+
+  //   var workbook = new Excel.Workbook();
+  //   workbook.xlsx.readFile(`./public/uploads/${filename}`).then(function () {
+  //     var worksheet = workbook.getWorksheet(1);
+  //     const row = worksheet.getRow(4);
+  //     for (let i = 1; i <= 4; i++) {
+  //       worksheet.getCell(`E${i}`).value = {
+  //         formula: `(A${i}+B${i}+C${i})/3`,
+  //       };
+  //     }
+  //     console.log(row, "row");
+  //     row._cells.map((item: any, i: number) => console.log(item._value));
+  //     // row.getCell(1).value = 5; // A5's value set to 5
+  //     // row.commit();
+  //     // return workbook.xlsx.writeFile("new.xlsx");
+  //   });
 
   const worksheetsArray = xlsx.parse(`./public/uploads/${filename}`);
   const excelData = excelToJson({
@@ -232,7 +248,7 @@ const insertResults = async (
       "_GP",
       calculateGradePoint
     );
-    console.log(subjects);
+    // console.log(subjects, "subjects");
 
     const totalMarks = calculateTotalMarks(subjects);
     const totalGradePoint = calculateTotalGradePoint(subjectGradePoints);
@@ -246,7 +262,7 @@ const insertResults = async (
       group_name: group,
       //   english_total: subjects.English_1st_CQ + subjects.English_2nd_CQ,
       ...subjects,
-      //   ...subjectTotal,
+      ...subjectTotal,
       //   ...subjectPercentages,
       //   ...subjectGradePoints,
       total_marks: totalMarks,
